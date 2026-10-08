@@ -1,0 +1,29 @@
+# Blueprint cho Render: Postgres + API (NestJS) + Web (Next.js).
+# Dùng: Render Dashboard > New > Blueprint > chọn repo chứa thư mục này.
+databases:
+  - name: devjobs-db
+    plan: free
+
+services:
+  - type: web
+    name: devjobs-api
+    runtime: docker
+    rootDir: api
+    plan: free
+    healthCheckPath: /api/healthz
+    envVars:
+      - key: APP_PASSWORD
+        sync: false            # bạn nhập mật khẩu trên dashboard (không commit vào git)
+      - key: DATABASE_URL
+        fromDatabase:
+          name: devjobs-db
+          property: connectionString
+
+  - type: web
+    name: devjobs-web
+    runtime: docker
+    rootDir: web
+    plan: free
+    envVars:
+      - key: API_URL
+        sync: false            # URL công khai của devjobs-api, vd https://devjobs-api.onrender.com
